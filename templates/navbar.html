@@ -1,0 +1,38 @@
+<!-- NAVBAR - include in each template -->
+<style>
+  .navbar{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(5,10,20,0.85);backdrop-filter:blur(20px);
+    border-bottom:1px solid rgba(255,255,255,0.07);
+    padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#00d4aa,#7b61ff);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-logo-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#e8eaf0;}
+  .nav-logo-text span{background:linear-gradient(90deg,#00d4aa,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;align-items:center;gap:4px;}
+  .nav-links a{
+    color:#7a8299;text-decoration:none;font-size:13px;font-weight:500;
+    padding:7px 14px;border-radius:9px;transition:all 0.2s;
+  }
+  .nav-links a:hover,.nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.06);}
+  .nav-links a.logout{color:#ff4d6d;}
+  .nav-links a.logout:hover{background:rgba(255,77,109,0.1);}
+  .nav-user{display:flex;align-items:center;gap:10px;}
+  .avatar{width:32px;height:32px;background:linear-gradient(135deg,#00d4aa,#7b61ff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;font-family:'Syne',sans-serif;}
+  @media(max-width:700px){.nav-links{gap:0;}.nav-links a{padding:6px 8px;font-size:12px;}}
+</style>
+<nav class="navbar">
+  <a href="/dashboard" class="nav-logo">
+    <div class="nav-logo-icon">💹</div>
+    <span class="nav-logo-text">Smart <span>Advisor</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/dashboard" {% if request.path=='/dashboard' %}class="active"{% endif %}>Dashboard</a>
+    <a href="/about" {% if request.path=='/about' %}class="active"{% endif %}>About</a>
+    <a href="/details" {% if request.path=='/details' %}class="active"{% endif %}>My Details</a>
+    <a href="/profile" {% if request.path=='/profile' %}class="active"{% endif %}>Profile</a>
+    {% if session.get('is_admin') %}<a href="/admin">⚙ Admin</a>{% endif %}
+    <a href="/logout" class="logout">Logout</a>
+  </div>
+</nav>

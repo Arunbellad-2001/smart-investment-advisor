@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Advisor — Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#00d4aa;--accent2:#7b61ff;--text:#e8eaf0;--muted:#7a8299;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(ellipse 70% 50% at 15% 20%,rgba(0,212,170,0.06) 0%,transparent 55%),radial-gradient(ellipse 50% 70% at 85% 80%,rgba(123,97,255,0.06) 0%,transparent 55%);}
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,10,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-logo-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+  .nav-logo-text span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;align-items:center;gap:4px;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,0.06);}
+  .nav-links a.logout{color:#ff4d6d;}
+  .main{padding:80px 32px 60px;max-width:680px;margin:0 auto;}
+  .page-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;}
+  .page-sub{color:var(--muted);font-size:13px;margin-bottom:28px;}
+  .flash{padding:12px 16px;border-radius:12px;font-size:13px;margin-bottom:20px;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.25);color:var(--accent);}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;backdrop-filter:blur(20px);margin-bottom:20px;}
+  .card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:20px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px;}
+  input,select{width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all 0.2s;}
+  input:focus,select:focus{border-color:var(--accent);background:rgba(0,212,170,0.05);box-shadow:0 0 0 3px rgba(0,212,170,0.1);}
+  select option{background:#0d1526;}
+  .btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.5px;cursor:pointer;transition:all 0.2s;}
+  .btn:hover{opacity:0.9;transform:translateY(-1px);}
+  @media(max-width:600px){.grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="/dashboard" class="nav-logo">
+    <div class="nav-logo-icon">💹</div>
+    <span class="nav-logo-text">Smart <span>Advisor</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/about">About</a>
+    <a href="/details">My Details</a>
+    <a href="/profile" class="active">Profile</a>
+    <a href="/contact" {% if request.path=="/contact" %}class="active"{% endif %}>Contact</a>
+    <a href="/logout" class="logout">Logout</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="page-title">⚙️ Edit Profile</div>
+  <div class="page-sub">Update your personal and financial information</div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="flash">✅ {{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST">
+    <div class="card">
+      <div class="card-title">Personal Information</div>
+      <div class="grid2">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" value="{{ user.name }}" required>
+        </div>
+        <div class="form-group">
+          <label>Mobile</label>
+          <input type="tel" name="mobile" value="{{ user.mobile or '' }}" placeholder="+91 00000 00000">
+        </div>
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" name="age" value="{{ user.age or 25 }}" min="18" max="80">
+        </div>
+        <div class="form-group">
+          <label>Qualification</label>
+          <select name="qualification">
+            <option value="">Select</option>
+            {% for q in ['High School','Graduate','Post Graduate','Professional'] %}
+            <option value="{{ q }}" {% if user.qualification==q %}selected{% endif %}>{{ q }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Financial Information</div>
+      <div class="grid2">
+        <div class="form-group">
+          <label>Monthly Income (₹)</label>
+          <input type="number" name="income" value="{{ user.income or 50000 }}">
+        </div>
+        <div class="form-group">
+          <label>Monthly Savings (₹)</label>
+          <input type="number" name="savings" value="{{ user.savings or 0 }}">
+        </div>
+        <div class="form-group">
+          <label>Monthly Expenses (₹)</label>
+          <input type="number" name="expenses" value="{{ user.expenses or 0 }}">
+        </div>
+        <div class="form-group">
+          <label>Monthly Investments (₹)</label>
+          <input type="number" name="investments" value="{{ user.investments or 0 }}">
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn">Save Changes →</button>
+  </form>
+</main>
+</body>
+</html>

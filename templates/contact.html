@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Advisor — Contact Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#00d4aa;--accent2:#7b61ff;--text:#e8eaf0;--muted:#7a8299;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(ellipse 70% 50% at 15% 20%,rgba(0,212,170,0.07) 0%,transparent 55%),
+                     radial-gradient(ellipse 50% 70% at 85% 80%,rgba(123,97,255,0.07) 0%,transparent 55%);}
+
+  /* NAVBAR */
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,10,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-logo-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+  .nav-logo-text span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;align-items:center;gap:4px;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,0.06);}
+  .nav-links a.logout{color:#ff4d6d;}
+  .nav-links a.logout:hover{background:rgba(255,77,109,0.1);}
+
+  /* MAIN */
+  .main{padding:80px 32px 60px;max-width:1060px;margin:0 auto;}
+
+  /* HERO */
+  .hero{text-align:center;padding:48px 0 40px;}
+  .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);color:var(--accent);font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:18px;letter-spacing:0.5px;}
+  .hero h1{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;line-height:1.15;margin-bottom:14px;}
+  .hero h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .hero p{color:var(--muted);font-size:15px;max-width:520px;margin:0 auto;line-height:1.7;}
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;}
+
+  /* CARD */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:30px;backdrop-filter:blur(24px);box-shadow:0 12px 40px rgba(0,0,0,0.3);}
+  .card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:4px;}
+  .card-sub{color:var(--muted);font-size:13px;margin-bottom:24px;}
+
+  /* FLASH */
+  .flash{padding:12px 16px;border-radius:12px;font-size:13px;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+  .flash.success{background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.25);color:var(--accent);}
+  .flash.error{background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.25);color:#ff8fa3;}
+
+  /* FORM */
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.6px;}
+  .required-star{color:#ff4d6d;margin-left:2px;}
+  input,select,textarea{width:100%;padding:12px 15px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all 0.2s;}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);background:rgba(0,212,170,0.05);box-shadow:0 0 0 3px rgba(0,212,170,0.1);}
+  input::placeholder,textarea::placeholder{color:var(--muted);}
+  select option{background:#0d1526;color:var(--text);}
+  textarea{resize:vertical;min-height:120px;line-height:1.6;}
+
+  /* BTN */
+  .btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:13px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.5px;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;}
+  .btn:hover{opacity:0.9;transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,212,170,0.3);}
+  .btn:active{transform:translateY(0);}
+
+  /* INFO CARDS */
+  .info-stack{display:flex;flex-direction:column;gap:14px;}
+  .info-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;gap:16px;align-items:flex-start;backdrop-filter:blur(20px);transition:border-color 0.2s;}
+  .info-card:hover{border-color:rgba(0,212,170,0.25);}
+  .info-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .info-icon.teal{background:rgba(0,212,170,0.1);}
+  .info-icon.purple{background:rgba(123,97,255,0.1);}
+  .info-icon.yellow{background:rgba(251,191,36,0.1);}
+  .info-icon.red{background:rgba(255,77,109,0.1);}
+  .info-content h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;}
+  .info-content p{font-size:13px;color:var(--muted);line-height:1.5;}
+  .info-content a{color:var(--accent);text-decoration:none;}
+  .info-content a:hover{text-decoration:underline;}
+
+  /* HOURS */
+  .hours-card{background:linear-gradient(135deg,rgba(0,212,170,0.06),rgba(123,97,255,0.06));border:1px solid rgba(0,212,170,0.15);border-radius:16px;padding:20px;}
+  .hours-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:12px;color:var(--accent);}
+  .hours-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+  .hours-row:last-child{border-bottom:none;}
+  .hours-row span:first-child{color:var(--muted);}
+  .hours-row span:last-child{font-weight:600;}
+
+  /* CHAR COUNTER */
+  .char-counter{font-size:11px;color:var(--muted);text-align:right;margin-top:4px;}
+
+  @media(max-width:860px){.grid{grid-template-columns:1fr;}.form-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/dashboard" class="nav-logo">
+    <div class="nav-logo-icon">💹</div>
+    <span class="nav-logo-text">Smart <span>Advisor</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/about">About</a>
+    <a href="/details">My Details</a>
+    <a href="/profile">Profile</a>
+    <a href="/contact" class="active">Contact</a>
+    {% if session.get('is_admin') %}<a href="/admin">⚙ Admin</a>{% endif %}
+    <a href="/logout" class="logout">Logout</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="hero">
+    <div class="hero-badge">📬 Get In Touch</div>
+    <h1>We're Here to <span>Help You</span></h1>
+    <p>Have questions about your investments or need guidance? Reach out and our team will respond promptly.</p>
+  </div>
+
+  <div class="grid">
+    <!-- FORM -->
+    <div class="card">
+      <div class="card-title">Send a Message</div>
+      <div class="card-sub">Fill in all details and we'll get back to you within 24 hours</div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}">
+            {% if cat == 'success' %}✅{% else %}⚠️{% endif %} {{ msg }}
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" id="contactForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name <span class="required-star">*</span></label>
+            <input type="text" name="name" placeholder="Your full name" required
+                   value="{{ session.name }}">
+          </div>
+          <div class="form-group">
+            <label>Email Address <span class="required-star">*</span></label>
+            <input type="email" name="email" placeholder="your@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="tel" name="mobile" placeholder="+91 98765 43210">
+          </div>
+          <div class="form-group">
+            <label>Subject <span class="required-star">*</span></label>
+            <select name="subject" required>
+              <option value="">Select a topic</option>
+              <option value="Investment Query">📈 Investment Query</option>
+              <option value="Portfolio Review">📊 Portfolio Review</option>
+              <option value="SIP Guidance">📅 SIP Guidance</option>
+              <option value="Account Support">🔧 Account Support</option>
+              <option value="Tax & Planning">🧾 Tax & Planning</option>
+              <option value="General Enquiry">💬 General Enquiry</option>
+              <option value="Feedback">⭐ Feedback</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Message <span class="required-star">*</span></label>
+          <textarea name="message" id="msgArea" placeholder="Describe your query in detail..." required maxlength="1000"
+                    oninput="document.getElementById('charCount').textContent=this.value.length"></textarea>
+          <div class="char-counter"><span id="charCount">0</span> / 1000 characters</div>
+        </div>
+
+        <button type="submit" class="btn">
+          <span>Send Message</span>
+          <span>📨</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- INFO SIDEBAR -->
+    <div>
+      <div class="info-stack">
+        <div class="info-card">
+          <div class="info-icon teal">📍</div>
+          <div class="info-content">
+            <h4>Our Office</h4>
+            <p>Smart Advisor HQ<br>MG Road, Bengaluru<br>Karnataka – 560 001, India</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon purple">📞</div>
+          <div class="info-content">
+            <h4>Phone Support</h4>
+            <p><a href="tel:+918001234567">+91 800 123 4567</a><br>
+            <a href="tel:+918009876543">+91 800 987 6543</a></p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon yellow">✉️</div>
+          <div class="info-content">
+            <h4>Email Us</h4>
+            <p><a href="mailto:support@smartadvisor.in">support@smartadvisor.in</a><br>
+            <a href="mailto:invest@smartadvisor.in">invest@smartadvisor.in</a></p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon red">🌐</div>
+          <div class="info-content">
+            <h4>Social Media</h4>
+            <p>@SmartAdvisorIN on Twitter, LinkedIn & Instagram</p>
+          </div>
+        </div>
+
+        <div class="hours-card">
+          <div class="hours-title">🕐 Support Hours</div>
+          <div class="hours-row"><span>Mon – Fri</span><span style="color:var(--accent);">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span>Saturday</span><span style="color:#fbbf24;">10:00 AM – 4:00 PM</span></div>
+          <div class="hours-row"><span>Sunday</span><span style="color:#ff4d6d;">Closed</span></div>
+          <div class="hours-row"><span>Response Time</span><span>Within 24 hrs</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

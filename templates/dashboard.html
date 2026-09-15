@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Advisor — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#00d4aa;--accent2:#7b61ff;--text:#e8eaf0;--muted:#7a8299;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(ellipse 70% 50% at 15% 20%,rgba(0,212,170,0.06) 0%,transparent 55%),radial-gradient(ellipse 50% 70% at 85% 80%,rgba(123,97,255,0.06) 0%,transparent 55%);
+  }
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,10,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-logo-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+  .nav-logo-text span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;align-items:center;gap:4px;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,0.06);}
+  .nav-links a.logout{color:#ff4d6d;}
+  .nav-links a.logout:hover{background:rgba(255,77,109,0.1);}
+  .main{padding:80px 32px 40px;max-width:1200px;margin:0 auto;}
+  .welcome{margin-bottom:32px;}
+  .welcome h2{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+  .welcome h2 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .welcome p{color:var(--muted);font-size:14px;margin-top:6px;}
+  
+  /* Market Stats Tickers Row Styles */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;backdrop-filter:blur(20px);display:flex;flex-direction:column;justify-content:space-between;}
+  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:8px;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;}
+  
+  /* Real-time Ticker indicators */
+  .change-badge{font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;width:fit-content;}
+  .change-badge.green{background:rgba(0,212,170,0.1);color:var(--accent);}
+  .change-badge.red{background:rgba(255,77,109,0.1);color:#ff4d6d;}
+  .stat-val.green{color:var(--accent);}
+  .stat-val.purple{color:var(--accent2);}
+  .stat-val.yellow{color:#fbbf24;}
+  .muted-text{font-size:12px;color:var(--muted);}
+
+  .grid2{display:grid;grid-template-columns:1fr 340px;gap:24px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+  .card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
+  .card-sub{color:var(--muted);font-size:13px;margin-bottom:24px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .form-group{margin-bottom:18px;}
+  label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px;}
+  input,select{width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all 0.2s;}
+  input:focus,select:focus{border-color:var(--accent);background:rgba(0,212,170,0.05);box-shadow:0 0 0 3px rgba(0,212,170,0.1);}
+  select option{background:#0d1526;}
+  .btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.5px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .btn:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,170,0.3);}
+  .tips-list{list-style:none;}
+  .tip{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);}
+  .tip:last-child{border-bottom:none;}
+  .tip-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .tip-icon.g{background:rgba(0,212,170,0.12);}
+  .tip-icon.p{background:rgba(123,97,255,0.12);}
+  .tip-icon.y{background:rgba(251,191,36,0.12);}
+  .tip-icon.r{background:rgba(255,77,109,0.12);}
+  .tip-text h4{font-size:13px;font-weight:600;margin-bottom:2px;}
+  .tip-text p{font-size:12px;color:var(--muted);}
+  .history{margin-top:24px;}
+  .history-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
+  .history-item .risk{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;}
+  .risk.low{background:rgba(0,212,170,0.1);color:var(--accent);}
+  .risk.medium{background:rgba(251,191,36,0.1);color:#fbbf24;}
+  .risk.high{background:rgba(255,77,109,0.1);color:#ff4d6d;}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="/dashboard" class="nav-logo">
+    <div class="nav-logo-icon">💹</div>
+    <span class="nav-logo-text">Smart <span>Advisor</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/dashboard" class="active">Dashboard</a>
+    <a href="/about">About</a>
+    <a href="/details">My Details</a>
+    <a href="/profile">Profile</a>
+    {% if session.get('is_admin') %}<a href="/admin">⚙ Admin</a>{% endif %}
+    <a href="/contact" {% if request.path=="/contact" %}class="active"{% endif %}>Contact</a>
+    <a href="/logout" class="logout">Logout</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="welcome">
+    <h2>Welcome back, <span>{{ session.name }} 👋</span></h2>
+    <p>Here's your personalized investment overview for today</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-label">Market Status</div>
+      <div class="stat-val green">● Live</div>
+      <span class="muted-text">Real-time Feed</span>
+    </div>
+    
+    <div class="stat">
+      <div class="stat-label">Nifty 50</div>
+      <div class="stat-val">₹{{ "{:,.2f}".format(market.nifty) }}</div>
+      <span class="change-badge {% if market.nifty_change >= 0 %}green{% else %}red{% endif %}">
+        {% if market.nifty_change >= 0 %}+{% endif %}{{ market.nifty_change }}%
+      </span>
+    </div>
+    
+    <div class="stat">
+      <div class="stat-label">Sensex</div>
+      <div class="stat-val yellow">₹{{ "{:,.2f}".format(market.sensex) }}</div>
+      <span class="change-badge {% if market.sensex_change >= 0 %}green{% else %}red{% endif %}">
+        {% if market.sensex_change >= 0 %}+{% endif %}{{ market.sensex_change }}%
+      </span>
+    </div>
+    
+    <div class="stat">
+      <div class="stat-label">Gold (Per 10g)</div>
+      <div class="stat-val purple">₹{{ "{:,.2f}".format(market.gold) }}</div>
+      <span class="muted-text">MCX Live Tracked</span>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <div class="card">
+        <div class="card-title">🧠 Investment Advisor</div>
+        <div class="card-sub">Fill in your details to get personalized advice</div>
+        <form method="POST" action="/predict">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Your Age</label>
+              <input type="number" name="age" placeholder="e.g. 28" min="18" max="80" required>
+            </div>
+            <div class="form-group">
+              <label>Monthly Income (₹)</label>
+              <input type="number" name="income" placeholder="e.g. 75000" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Risk Tolerance</label>
+              <select name="risk" required>
+                <option value="">Select level</option>
+                <option value="low">🟢 Low — Safe & Stable</option>
+                <option value="medium">🟡 Medium — Balanced</option>
+                <option value="high">🔴 High — Aggressive</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Financial Goal</label>
+              <select name="goal" required>
+                <option value="">Select goal</option>
+                <option value="savings">💰 Savings</option>
+                <option value="wealth">📈 Wealth Creation</option>
+                <option value="education">🎓 Education</option>
+                <option value="retirement">🏖 Retirement</option>
+                <option value="home">🏠 Buy a Home</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn">
+            <span>Get My Investment Advice</span>
+            <span>→</span>
+          </button>
+        </form>
+
+        {% if history %}
+        <div class="history">
+          <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;font-weight:600;">Recent History</div>
+          {% for h in history %}
+          <div class="history-item">
+            <span style="font-size:13px;font-weight:500;">Age {{ h.age }} · ₹{{ "{:,.0f}".format(h.income) }}/mo · {{ h.goal|title }}</span>
+            <span class="risk {{ h.risk }}">{{ h.risk|upper }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-title">💡 Smart Investor Tips</div>
+        <div class="card-sub">Timeless principles for wealth building</div>
+        <ul class="tips-list">
+          <li class="tip">
+            <div class="tip-icon g">🌱</div>
+            <div class="tip-text">
+              <h4>Start Early</h4>
+              <p>Compounding grows wealth exponentially over time. Every year counts.</p>
+            </div>
+          </li>
+          <li class="tip">
+            <div class="tip-icon p">🎯</div>
+            <div class="tip-text">
+              <h4>Diversify Portfolio</h4>
+              <p>Spread risk across stocks, bonds, real estate, and gold.</p>
+            </div>
+          </li>
+          <li class="tip">
+            <div class="tip-icon y">📅</div>
+            <div class="tip-text">
+              <h4>Use SIP Strategy</h4>
+              <p>Systematic Investment Plans reduce market timing risk via averaging.</p>
+            </div>
+          </li>
+          <li class="tip">
+            <div class="tip-icon r">🔄</div>
+            <div class="tip-text">
+              <h4>Review Regularly</h4>
+              <p>Rebalance your portfolio every 6–12 months to stay on track.</p>
+            </div>
+          </li>
+          <li class="tip">
+            <div class="tip-icon g">🛡️</div>
+            <div class="tip-text">
+              <h4>Emergency Fund First</h4>
+              <p>Keep 6 months of expenses liquid before investing.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

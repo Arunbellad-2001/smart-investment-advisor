@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Advisor — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#00d4aa;--accent2:#7b61ff;--text:#e8eaf0;--muted:#7a8299;--danger:#ff4d6d;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(ellipse 70% 50% at 10% 15%,rgba(255,77,109,0.05) 0%,transparent 55%),radial-gradient(ellipse 60% 80% at 90% 85%,rgba(123,97,255,0.06) 0%,transparent 55%);}
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,10,20,0.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,77,109,0.15);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-left{display:flex;align-items:center;gap:12px;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#ff4d6d,#ff8c00);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-brand{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text);}
+  .admin-badge{background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--danger);font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;}
+  .nav-links{display:flex;align-items:center;gap:8px;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:7px 14px;border-radius:9px;transition:all 0.2s;}
+  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,0.06);}
+  .nav-links a.red{color:var(--danger);}
+  .main{padding:80px 32px 60px;max-width:1200px;margin:0 auto;}
+  .page-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;}
+  .page-sub{color:var(--muted);font-size:13px;margin-bottom:28px;}
+  .flash{padding:12px 16px;border-radius:12px;font-size:13px;margin-bottom:20px;background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);color:var(--accent);}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;backdrop-filter:blur(20px);}
+  .stat-icon{font-size:22px;margin-bottom:10px;}
+  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:6px;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;}
+  .stat-val.green{color:var(--accent);}
+  .stat-val.purple{color:var(--accent2);}
+  .stat-val.yellow{color:#fbbf24;}
+  .stat-val.red{color:var(--danger);}
+  .tabs{display:flex;gap:4px;margin-bottom:20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:5px;width:fit-content;}
+  .tab-btn{padding:9px 22px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;}
+  .tab-btn.active{background:rgba(255,255,255,0.08);color:var(--text);}
+  .t-badge{background:rgba(0,212,170,0.15);color:var(--accent);font-size:10px;font-weight:800;padding:1px 7px;border-radius:20px;}
+  .t-badge.rb{background:rgba(255,77,109,0.15);color:var(--danger);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;backdrop-filter:blur(20px);}
+  .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+  .card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+  .rec-count{font-size:12px;color:var(--muted);background:rgba(255,255,255,0.05);padding:4px 10px;border-radius:20px;}
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;}
+  th{text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;padding:0 14px 12px;font-weight:600;white-space:nowrap;}
+  td{padding:12px 14px;font-size:13px;border-top:1px solid rgba(255,255,255,0.04);vertical-align:middle;}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+  .badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:0.4px;}
+  .badge.g{background:rgba(0,212,170,0.1);color:var(--accent);border:1px solid rgba(0,212,170,0.2);}
+  .badge.p{background:rgba(123,97,255,0.1);color:var(--accent2);border:1px solid rgba(123,97,255,0.2);}
+  .avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;}
+  .avatar.orange{background:linear-gradient(135deg,#ff4d6d,#ff8c00);}
+  .del-btn{background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);color:var(--danger);font-size:11px;font-weight:600;padding:6px 13px;border-radius:8px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+  .del-btn:hover{background:rgba(255,77,109,0.18);border-color:rgba(255,77,109,0.4);}
+  .msg-preview{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);cursor:pointer;}
+  .msg-preview:hover{color:var(--text);}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:999;backdrop-filter:blur(8px);align-items:center;justify-content:center;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:#0d1526;border:1px solid var(--border);border-radius:18px;padding:28px;max-width:500px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.6);}
+  .modal-box h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px;}
+  .modal-box .from{font-size:12px;color:var(--muted);margin-bottom:16px;}
+  .modal-box p{font-size:14px;color:#c8cad5;line-height:1.75;white-space:pre-wrap;}
+  .modal-close{margin-top:20px;padding:9px 20px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:9px;color:var(--text);cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;}
+  .empty{text-align:center;padding:50px;color:var(--muted);}
+  .empty-icon{font-size:40px;margin-bottom:12px;}
+  @media(max-width:900px){.stats-row{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="nav-logo-icon">⚙</div>
+    <span class="nav-brand">Admin Panel</span>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <div class="nav-links">
+    <a href="/dashboard">← Dashboard</a>
+    <a href="/logout" class="red">Logout</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="page-title">⚙️ Admin Control Panel</div>
+  <div class="page-sub">Manage users, view contact enquiries, and monitor platform statistics</div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="flash">✅ {{ msg }}</div>{% endfor %}
+  {% endwith %}
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-icon">👥</div>
+      <div class="stat-label">Total Users</div>
+      <div class="stat-val green">{{ total }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">💰</div>
+      <div class="stat-label">Avg Monthly Income</div>
+      <div class="stat-val purple">₹{{ "{:,.0f}".format(avg_income) }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">📊</div>
+      <div class="stat-label">Advice Given</div>
+      <div class="stat-val yellow">{{ total_advice }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">📬</div>
+      <div class="stat-label">Contact Messages</div>
+      <div class="stat-val red">{{ total_contacts }}</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('users',this)">
+      👥 Registered Users <span class="t-badge">{{ total }}</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('contacts',this)">
+      📬 Contact Messages <span class="t-badge rb">{{ total_contacts }}</span>
+    </button>
+  </div>
+
+  <!-- ═══ USERS TAB ═══ -->
+  <div id="tab-users" class="tab-panel active">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">👥 All Registered Users</div>
+        <span class="rec-count">{{ total }} record{{ 's' if total != 1 else '' }}</span>
+      </div>
+      {% if users %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>User</th><th>Email</th><th>Age</th>
+              <th>Income/Month</th><th>Qualification</th><th>Joined</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td style="color:var(--muted);font-size:12px;">{{ loop.index }}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="avatar">{{ (u.name or 'U')[0]|upper }}</div>
+                  <div>
+                    <div style="font-weight:600;">{{ u.name }}</div>
+                    <div style="color:var(--accent2);font-size:11px;">@{{ u.username }}</div>
+                  </div>
+                </div>
+              </td>
+              <td style="color:var(--muted);">{{ u.email }}</td>
+              <td><span class="badge g">{{ u.age or '—' }}</span></td>
+              <td style="color:var(--accent);font-weight:600;">₹{{ "{:,.0f}".format(u.income or 0) }}</td>
+              <td style="color:var(--muted);">{{ u.qualification or '—' }}</td>
+              <td style="color:var(--muted);font-size:12px;">{{ (u.created_at or '')[:10] }}</td>
+              <td>
+                <form method="POST" action="/admin/delete/user/{{ u.id }}"
+                      onsubmit="return confirm('Delete user {{ u.name }}?\nThis cannot be undone.')">
+                  <button type="submit" class="del-btn">🗑 Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty"><div class="empty-icon">👤</div><p>No registered users yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ═══ CONTACTS TAB ═══ -->
+  <div id="tab-contacts" class="tab-panel">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📬 Contact Form Submissions</div>
+        <span class="rec-count">{{ total_contacts }} message{{ 's' if total_contacts != 1 else '' }}</span>
+      </div>
+      {% if contacts %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Sender</th><th>Email</th><th>Mobile</th>
+              <th>Subject</th><th>Message</th><th>Received</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in contacts %}
+            <tr>
+              <td style="color:var(--muted);font-size:12px;">{{ loop.index }}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="avatar orange">{{ (c.name or 'C')[0]|upper }}</div>
+                  <span style="font-weight:600;">{{ c.name }}</span>
+                </div>
+              </td>
+              <td style="color:var(--muted);">{{ c.email }}</td>
+              <td style="color:var(--muted);">{{ c.mobile or '—' }}</td>
+              <td><span class="badge p">{{ c.subject }}</span></td>
+              <td>
+                <span class="msg-preview"
+                      onclick="showMsg('{{ c.name|replace("'","&apos;")|e }}','{{ (c.subject or '')|e }}','{{ (c.message or '')|replace("'","&apos;")|replace('"','&quot;')|e }}')">
+                  {{ (c.message or '')[:55] }}{% if (c.message or '')|length > 55 %}…{% endif %}
+                </span>
+              </td>
+              <td style="color:var(--muted);font-size:12px;">{{ (c.created_at or '')[:16] }}</td>
+              <td>
+                <form method="POST" action="/admin/delete/contact/{{ c.id }}"
+                      onsubmit="return confirm('Delete this contact message from {{ c.name }}?')">
+                  <button type="submit" class="del-btn">🗑 Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty">
+        <div class="empty-icon">📭</div>
+        <p>No contact messages yet. They appear here when users submit the contact form.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="msgModal" onclick="if(event.target===this)closeMsg()">
+  <div class="modal-box">
+    <h3 id="modalSubject">—</h3>
+    <div class="from" id="modalFrom">—</div>
+    <p id="modalMsg">—</p>
+    <button class="modal-close" onclick="closeMsg()">Close ✕</button>
+  </div>
+</div>
+
+<script>
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+function showMsg(name, subject, msg) {
+  document.getElementById('modalSubject').textContent = subject;
+  document.getElementById('modalFrom').textContent = 'From: ' + name;
+  document.getElementById('modalMsg').textContent = msg;
+  document.getElementById('msgModal').classList.add('show');
+}
+function closeMsg() {
+  document.getElementById('msgModal').classList.remove('show');
+}
+if (location.hash === '#contacts') {
+  document.querySelectorAll('.tab-btn')[1].click();
+}
+</script>
+</body>
+</html>

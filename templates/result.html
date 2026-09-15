@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Advisor — Your Investment Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#00d4aa;--accent2:#7b61ff;--text:#e8eaf0;--muted:#7a8299;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(ellipse 70% 50% at 15% 20%,rgba(0,212,170,0.06) 0%,transparent 55%),radial-gradient(ellipse 50% 70% at 85% 80%,rgba(123,97,255,0.06) 0%,transparent 55%);}
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,10,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-logo-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+  .nav-logo-text span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;align-items:center;gap:4px;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;transition:all 0.2s;}
+  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,0.06);}
+  .nav-links a.logout{color:#ff4d6d;}
+  .main{padding:80px 32px 60px;max-width:1200px;margin:0 auto;}
+  .page-header{margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;}
+  .page-header h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;}
+  .badge{font-size:11px;padding:5px 12px;border-radius:20px;font-weight:600;}
+  .badge.low{background:rgba(0,212,170,0.12);color:var(--accent);}
+  .badge.medium{background:rgba(251,191,36,0.12);color:#fbbf24;}
+  .badge.high{background:rgba(255,77,109,0.12);color:#ff4d6d;}
+  .grid2{display:grid;grid-template-columns:1fr 360px;gap:24px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;backdrop-filter:blur(20px);}
+  .section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;}
+  .investment-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+  .tag{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;border:1px solid;}
+  .tag.green{background:rgba(0,212,170,0.08);border-color:rgba(0,212,170,0.25);color:var(--accent);}
+  .tag.purple{background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.25);color:var(--accent2);}
+  .tag.yellow{background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.25);color:#fbbf24;}
+  .return-box{background:linear-gradient(135deg,rgba(0,212,170,0.06),rgba(123,97,255,0.06));border:1px solid rgba(0,212,170,0.15);border-radius:14px;padding:18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+  .return-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .return-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;}
+  .reason-box{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.6;}
+  .reason-box strong{color:var(--text);display:block;margin-bottom:6px;font-family:'Syne',sans-serif;}
+  .risk-bar-wrap{margin-bottom:20px;}
+  .risk-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;}
+  .risk-bar-track{background:rgba(255,255,255,0.06);border-radius:100px;height:8px;overflow:hidden;}
+  .risk-bar-fill{height:100%;border-radius:100px;transition:width 1s ease;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+  .risk-score-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-top:8px;}
+  .sip-card{margin-top:24px;}
+  .sip-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
+  .form-group{margin-bottom:0;}
+  label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.5px;}
+  input{width:100%;padding:10px 13px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all 0.2s;}
+  input:focus{border-color:var(--accent);background:rgba(0,212,170,0.05);}
+  .btn-sip{padding:11px 24px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+  .btn-sip:hover{opacity:0.9;transform:translateY(-1px);}
+  .sip-result{margin-top:16px;padding:16px;background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.15);border-radius:12px;display:none;}
+  .sip-result .fv{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--accent);}
+  .sip-result .fv-label{font-size:12px;color:var(--muted);}
+  .chart-container{position:relative;height:220px;}
+  .line-container{height:280px;}
+  .back-btn{display:inline-flex;align-items:center;gap:8px;color:var(--muted);text-decoration:none;font-size:13px;border:1px solid var(--border);padding:8px 16px;border-radius:10px;transition:all 0.2s;}
+  .back-btn:hover{color:var(--text);border-color:var(--accent);}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr;}.sip-inputs{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="/dashboard" class="nav-logo">
+    <div class="nav-logo-icon">💹</div>
+    <span class="nav-logo-text">Smart <span>Advisor</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/about">About</a>
+    <a href="/details">My Details</a>
+    <a href="/profile">Profile</a>
+    <a href="/contact" {% if request.path=="/contact" %}class="active"{% endif %}>Contact</a>
+    <a href="/logout" class="logout">Logout</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="page-header">
+    <div>
+      <h2>📊 Your Investment Plan</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:4px;">Personalized for age {{ age }}, ₹{{ "{:,.0f}".format(income|float) }}/month, {{ goal|title }} goal</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span class="badge {{ risk }}">{{ risk|upper }} RISK</span>
+      <a href="/dashboard" class="back-btn">← Back</a>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <!-- LEFT -->
+    <div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="section-title">Best Investments For You</div>
+        <div class="investment-tags">
+          {% set colors = ['green','purple','yellow'] %}
+          {% for inv in result.investments %}
+          <span class="tag {{ colors[loop.index0 % 3] }}">{{ inv }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="return-box">
+          <div>
+            <div class="return-label">Expected Annual Returns</div>
+            <div class="return-val">{{ result.return_range }}</div>
+          </div>
+          <div style="font-size:36px;">📈</div>
+        </div>
+
+        <div class="reason-box">
+          <strong>Why this plan?</strong>
+          {{ result.reason }}
+        </div>
+        <div class="reason-box">
+          <strong>Goal Insight</strong>
+          {{ result.goal_note }}
+        </div>
+
+        <div class="risk-bar-wrap">
+          <div class="section-title">Risk Score</div>
+          <div class="risk-bar-labels">
+            <span>Conservative</span>
+            <span>Aggressive</span>
+          </div>
+          <div class="risk-bar-track">
+            <div class="risk-bar-fill" id="riskBar" style="width:0%"></div>
+          </div>
+          <div class="risk-score-val">{{ result.risk_score }}<span style="font-size:14px;color:var(--muted);font-weight:400;">/100</span></div>
+        </div>
+      </div>
+
+      <!-- SIP CALCULATOR -->
+      <div class="card sip-card">
+        <div class="section-title">📅 SIP Calculator</div>
+        <div class="sip-inputs">
+          <div class="form-group">
+            <label>Monthly (₹)</label>
+            <input type="number" id="sipAmt" value="{{ result.sip_suggestion }}" min="100">
+          </div>
+          <div class="form-group">
+            <label>Years</label>
+            <input type="number" id="sipYears" value="10" min="1" max="40">
+          </div>
+          <div class="form-group">
+            <label>Rate (%)</label>
+            <input type="number" id="sipRate" value="12" min="1" max="30" step="0.5">
+          </div>
+        </div>
+        <button class="btn-sip" onclick="calcSIP()">Calculate Future Value →</button>
+
+        <div class="sip-result" id="sipResult">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+            <div>
+              <div class="fv-label">Estimated Future Value</div>
+              <div class="fv" id="fvDisplay">—</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="fv-label">Total Invested</div>
+              <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--accent2);" id="investedDisplay">—</div>
+            </div>
+          </div>
+          <div class="line-container">
+            <canvas id="growthChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: PIE CHART -->
+    <div>
+      <div class="card">
+        <div class="section-title">Portfolio Distribution</div>
+        <div class="chart-container">
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div id="portfolioLegend" style="margin-top:20px;"></div>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <div class="section-title">📌 Suggested SIP Amount</div>
+        <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);">
+          ₹{{ "{:,.0f}".format(result.sip_suggestion) }}<span style="font-size:14px;font-weight:400;color:var(--muted);">/month</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;">
+          ~20% of your monthly income, the recommended savings rate for wealth building.
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <div class="section-title">⚡ Quick Facts</div>
+        <div style="display:grid;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <span style="color:var(--muted);">Your Age</span>
+            <span style="font-weight:600;">{{ age }} years</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <span style="color:var(--muted);">Monthly Income</span>
+            <span style="font-weight:600;">₹{{ "{:,.0f}".format(income|float) }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <span style="color:var(--muted);">Risk Level</span>
+            <span style="font-weight:600;" class="badge {{ risk }}">{{ risk|upper }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0;">
+            <span style="color:var(--muted);">Financial Goal</span>
+            <span style="font-weight:600;">{{ goal|title }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const portfolioData = {{ result.portfolio | tojson }};
+const riskScore = {{ result.risk_score }};
+
+// Animate risk bar
+setTimeout(() => {
+  document.getElementById('riskBar').style.width = riskScore + '%';
+}, 300);
+
+// Pie chart
+const pieColors = ['#00d4aa','#7b61ff','#fbbf24','#ff4d6d','#38bdf8'];
+const pieLabels = Object.keys(portfolioData);
+const pieValues = Object.values(portfolioData);
+
+const pieCtx = document.getElementById('pieChart').getContext('2d');
+new Chart(pieCtx, {
+  type: 'doughnut',
+  data: {
+    labels: pieLabels,
+    datasets: [{
+      data: pieValues,
+      backgroundColor: pieColors.slice(0, pieLabels.length),
+      borderWidth: 0,
+      hoverOffset: 8,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => ` ${ctx.label}: ${ctx.raw}%`
+        }
+      }
+    }
+  }
+});
+
+// Custom legend
+const legend = document.getElementById('portfolioLegend');
+pieLabels.forEach((label, i) => {
+  legend.innerHTML += `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:10px;height:10px;border-radius:50%;background:${pieColors[i]};"></div>
+      <span style="font-size:13px;">${label}</span>
+    </div>
+    <span style="font-family:'Syne',sans-serif;font-weight:700;color:${pieColors[i]};">${pieValues[i]}%</span>
+  </div>`;
+});
+
+// SIP Calculator
+let growthChart = null;
+async function calcSIP() {
+  const P = parseFloat(document.getElementById('sipAmt').value) || 1000;
+  const years = parseInt(document.getElementById('sipYears').value) || 10;
+  const rate = parseFloat(document.getElementById('sipRate').value) || 12;
+
+  const res = await fetch('/api/sip', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ monthly: P, years, rate })
+  });
+  const data = await res.json();
+
+  document.getElementById('fvDisplay').textContent = '₹' + data.future_value.toLocaleString('en-IN', {maximumFractionDigits:0});
+  document.getElementById('investedDisplay').textContent = '₹' + data.total_invested.toLocaleString('en-IN', {maximumFractionDigits:0});
+  document.getElementById('sipResult').style.display = 'block';
+
+  const labels = data.growth.map(g => 'Year ' + g.year);
+  const values = data.growth.map(g => g.value);
+  const invested = data.growth.map(g => g.invested);
+
+  if (growthChart) growthChart.destroy();
+  const ctx = document.getElementById('growthChart').getContext('2d');
+  growthChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Portfolio Value',
+          data: values,
+          borderColor: '#00d4aa',
+          backgroundColor: 'rgba(0,212,170,0.08)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#00d4aa',
+        },
+        {
+          label: 'Amount Invested',
+          data: invested,
+          borderColor: '#7b61ff',
+          backgroundColor: 'rgba(123,97,255,0.05)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#7b61ff',
+          borderDash: [4,4],
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7a8299', font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` ${ctx.dataset.label}: ₹${ctx.raw.toLocaleString('en-IN',{maximumFractionDigits:0})}`
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#7a8299', font:{size:10} }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: {
+          ticks: { color: '#7a8299', font:{size:10}, callback: v => '₹' + (v/100000).toFixed(0) + 'L' },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>

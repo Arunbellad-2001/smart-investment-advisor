@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Advisor — About</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#00d4aa;--accent2:#7b61ff;--text:#e8eaf0;--muted:#7a8299;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(ellipse 70% 50% at 15% 20%,rgba(0,212,170,0.06) 0%,transparent 55%),radial-gradient(ellipse 50% 70% at 85% 80%,rgba(123,97,255,0.06) 0%,transparent 55%);}
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,10,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-logo-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+  .nav-logo-text span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;align-items:center;gap:4px;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,0.06);}
+  .nav-links a.logout{color:#ff4d6d;}
+  .main{padding:80px 32px 60px;max-width:900px;margin:0 auto;}
+  .hero{text-align:center;padding:60px 0 48px;}
+  .hero-badge{display:inline-block;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);color:var(--accent);font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:20px;letter-spacing:0.5px;}
+  .hero h1{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;line-height:1.2;margin-bottom:16px;}
+  .hero h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .hero p{color:var(--muted);font-size:16px;line-height:1.7;max-width:600px;margin:0 auto 32px;}
+  .btn-back{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .btn-back:hover{opacity:0.9;transform:translateY(-1px);}
+  .features{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:48px;}
+  .feature{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;backdrop-filter:blur(20px);transition:all 0.3s;}
+  .feature:hover{border-color:rgba(0,212,170,0.3);transform:translateY(-3px);}
+  .feature-icon{font-size:28px;margin-bottom:14px;}
+  .feature h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:8px;}
+  .feature p{font-size:13px;color:var(--muted);line-height:1.6;}
+  .overview{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;margin-bottom:32px;}
+  .overview h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:16px;}
+  .overview p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:14px;}
+  .overview p:last-child{margin-bottom:0;}
+  .tech-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px;}
+  .tech{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+  .tech .tech-name{font-size:13px;font-weight:600;margin-top:8px;}
+  .tech .tech-desc{font-size:11px;color:var(--muted);margin-top:4px;}
+  @media(max-width:700px){.features{grid-template-columns:1fr;}.tech-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="/dashboard" class="nav-logo">
+    <div class="nav-logo-icon">💹</div>
+    <span class="nav-logo-text">Smart <span>Advisor</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/about" class="active">About</a>
+    <a href="/details">My Details</a>
+    <a href="/profile">Profile</a>
+    <a href="/contact" {% if request.path=="/contact" %}class="active"{% endif %}>Contact</a>
+    <a href="/logout" class="logout">Logout</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="hero">
+    <div class="hero-badge">✨ AI-Powered Financial Guidance</div>
+    <h1>About <span>Smart Investment</span> Advisor</h1>
+    <p>An intelligent investment platform that analyzes your financial profile and delivers personalized portfolio recommendations to help you build lasting wealth.</p>
+    <a href="/dashboard" class="btn-back">← Back to Dashboard</a>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">🧠</div>
+      <h3>Smart Analysis</h3>
+      <p>Our algorithm analyzes age, income, risk tolerance, and goals to create a tailored investment strategy uniquely suited to you.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📊</div>
+      <h3>Portfolio Planning</h3>
+      <p>Visual pie charts and growth projections help you understand your portfolio distribution and expected wealth trajectory.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📅</div>
+      <h3>SIP Calculator</h3>
+      <p>Compute future wealth using the compound interest formula. See year-by-year growth visualization for your SIP investments.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔐</div>
+      <h3>Secure & Private</h3>
+      <p>All user data is encrypted with Werkzeug's password hashing. Your financial information stays safe and private.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📈</div>
+      <h3>Risk Scoring</h3>
+      <p>Get a personalized risk score that shows your investment profile on a 0–100 scale from conservative to aggressive.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">💡</div>
+      <h3>Investor Education</h3>
+      <p>Curated tips and insights on diversification, SIP strategies, emergency funds, and long-term wealth creation.</p>
+    </div>
+  </div>
+
+  <div class="overview">
+    <h2>Project Overview</h2>
+    <p>Smart Investment Advisor is a full-stack web application built with Python Flask on the backend and modern HTML/CSS/JavaScript on the frontend. It leverages SQLite for data persistence, Werkzeug for authentication, and Chart.js for interactive visualizations.</p>
+    <p>The recommendation engine analyzes user inputs — age, monthly income, risk tolerance, and financial goals — to generate a customized investment plan complete with portfolio allocation percentages, expected return ranges, and personalized insights.</p>
+    <p>The SIP Calculator uses the standard future value formula: <strong style="color:var(--accent)">FV = P × [((1+r)^n − 1) / r] × (1+r)</strong>, where P is monthly investment, r is monthly rate, and n is number of months.</p>
+
+    <div class="tech-grid">
+      <div class="tech">
+        <div style="font-size:22px;">🐍</div>
+        <div class="tech-name">Python Flask</div>
+        <div class="tech-desc">Backend framework</div>
+      </div>
+      <div class="tech">
+        <div style="font-size:22px;">🗄️</div>
+        <div class="tech-name">SQLite</div>
+        <div class="tech-desc">Database</div>
+      </div>
+      <div class="tech">
+        <div style="font-size:22px;">📊</div>
+        <div class="tech-name">Chart.js</div>
+        <div class="tech-desc">Visualizations</div>
+      </div>
+      <div class="tech">
+        <div style="font-size:22px;">🔐</div>
+        <div class="tech-name">Werkzeug</div>
+        <div class="tech-desc">Auth & security</div>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

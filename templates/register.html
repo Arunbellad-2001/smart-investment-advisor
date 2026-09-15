@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Advisor — Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.1);--accent:#00d4aa;--accent2:#7b61ff;--text:#e8eaf0;--muted:#7a8299;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+    background-image:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(0,212,170,0.08) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 80% 90%,rgba(123,97,255,0.08) 0%,transparent 60%);}
+  .container{width:100%;max-width:520px;}
+  .logo{text-align:center;margin-bottom:28px;}
+  .logo-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px;box-shadow:0 8px 24px rgba(0,212,170,0.25);}
+  .logo h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;}
+  .logo h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;backdrop-filter:blur(20px);box-shadow:0 24px 64px rgba(0,0,0,0.4);}
+  .card h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+  .card p.sub{color:var(--muted);font-size:13px;margin-bottom:24px;}
+  .flash{padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:16px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:#ff8fa3;}
+  .flash.success{background:rgba(0,212,170,0.1);border-color:rgba(0,212,170,0.3);color:var(--accent);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .form-group{margin-bottom:16px;}
+  .form-group.full{grid-column:1/-1;}
+  label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.6px;}
+  input,select{width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all 0.2s;}
+  input:focus,select:focus{border-color:var(--accent);background:rgba(0,212,170,0.05);box-shadow:0 0 0 3px rgba(0,212,170,0.1);}
+  input::placeholder{color:var(--muted);}
+  select option{background:#0d1526;color:var(--text);}
+  .btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.5px;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+  .btn:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,170,0.3);}
+  .link{text-align:center;margin-top:16px;font-size:13px;color:var(--muted);}
+  .link a{color:var(--accent);text-decoration:none;font-weight:500;}
+  .section-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 14px;padding-top:16px;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <div class="logo-icon">💹</div>
+    <h1>Smart <span>Advisor</span></h1>
+  </div>
+  <div class="card">
+    <h2>Create Account</h2>
+    <p class="sub">Join thousands of smart investors</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash {% if cat=='success' %}success{% endif %}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+    <form method="POST">
+      <div class="section-label">Personal Info</div>
+      <div class="grid">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="johndoe" required>
+        </div>
+        <div class="form-group full">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="john@example.com" required>
+        </div>
+        <div class="form-group full">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Create a strong password" required>
+        </div>
+        <div class="form-group">
+          <label>Mobile Number</label>
+          <input type="tel" name="mobile" placeholder="+91 00000 00000">
+        </div>
+        <div class="form-group">
+          <label>Qualification</label>
+          <select name="qualification">
+            <option value="">Select</option>
+            <option value="High School">High School</option>
+            <option value="Graduate">Graduate</option>
+            <option value="Post Graduate">Post Graduate</option>
+            <option value="Professional">Professional</option>
+          </select>
+        </div>
+      </div>
+      <div class="section-label">Financial Info</div>
+      <div class="grid">
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" name="age" placeholder="28" min="18" max="80">
+        </div>
+        <div class="form-group">
+          <label>Monthly Income (₹)</label>
+          <input type="number" name="income" placeholder="50000">
+        </div>
+      </div>
+      <button type="submit" class="btn">Create Account →</button>
+    </form>
+    <div class="link">Already have an account? <a href="/login">Sign in</a></div>
+  </div>
+</div>
+</body>
+</html>
