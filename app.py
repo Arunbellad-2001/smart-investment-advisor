@@ -352,6 +352,8 @@ def admin_delete_contact(cid):
     flash('Contact message deleted.', 'success')
     return redirect(url_for('admin_panel'))
 
+# Initialize Excel files on app startup
+init_excel()
+
 if __name__ == '__main__':
-    init_excel()
     app.run(debug=True, port=5000)
