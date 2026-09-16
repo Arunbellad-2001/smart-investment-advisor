@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os, json
 from datetime import datetime
 from functools import wraps
+from sqlalchemy.pool import NullPool
 import yfinance as yf  # Added for tracking real-time market data
 
 app = Flask(__name__)
@@ -23,11 +24,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# Configure SQLAlchemy with NullPool for Serverless Environments
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'poolclass': NullPool,
+    'connect_args': {
+        'sslmode': 'require'
+    }
+}
 # Add sslmode=require if connecting to Supabase from Vercel
 if "supabase.co" in db_url and "sslmode" not in db_url:
     db_url += "?sslmode=require"
-
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 
 # ── Database Models ────────────────────────────────────────────────────────────
 
