@@ -23,6 +23,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# Add sslmode=require if connecting to Supabase from Vercel
+if "supabase.co" in db_url and "sslmode" not in db_url:
+    db_url += "?sslmode=require"
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+
 # ── Database Models ────────────────────────────────────────────────────────────
 
 class User(db.Model):
