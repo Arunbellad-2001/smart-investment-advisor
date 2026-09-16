@@ -1,144 +1,232 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from openpyxl import Workbook, load_workbook
 import os, json
 from datetime import datetime
 from functools import wraps
 import yfinance as yf  # Added for tracking real-time market data
 
 app = Flask(__name__)
-app.secret_key = 'smart_advisor_secret_key_2024'
+app.secret_key = os.getenv("SECRET_KEY", "smart_advisor_secret_key_2024")
 
-USERS_FILE   = 'data_users.xlsx'
-HISTORY_FILE = 'data_history.xlsx'
-CONTACT_FILE = 'data_contacts.xlsx'
+# ── Database Configuration (Supabase PostgreSQL) ──────────────────────────────
 
-# ── Excel helpers ──────────────────────────────────────────────────────────────
+DEFAULT_DB_URL = "postgresql://postgres:ArunBellad2001@db.fkfahqjquqtwnexibhnp.supabase.co:5432/postgres"
+db_url = os.getenv("DATABASE_URL", DEFAULT_DB_URL)
 
-def init_excel():
-    if not os.path.exists(USERS_FILE):
-        wb = Workbook(); ws = wb.active; ws.title = 'Users'
-        ws.append(['id','name','email','username','password','mobile',
-                   'qualification','age','income','savings','expenses',
-                   'investments','created_at','is_admin'])
-        ws.append([1,'Admin','admin@advisor.com','admin',
-                   generate_password_hash('admin123'),
-                   '','',25,0,0,0,0,
-                   datetime.now().strftime('%Y-%m-%d %H:%M:%S'),1])
-        wb.save(USERS_FILE)
+# SQLAlchemy requires 'postgresql://' instead of legacy 'postgres://'
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
 
-    if not os.path.exists(HISTORY_FILE):
-        wb = Workbook(); ws = wb.active; ws.title = 'History'
-        ws.append(['id','user_id','age','income','risk','goal','result','created_at'])
-        wb.save(HISTORY_FILE)
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    if not os.path.exists(CONTACT_FILE):
-        wb = Workbook(); ws = wb.active; ws.title = 'Contacts'
-        ws.append(['id','name','email','mobile','subject','message','created_at'])
-        wb.save(CONTACT_FILE)
+db = SQLAlchemy(app)
 
-def _load_ws(filepath):
-    wb = load_workbook(filepath); return wb, wb.worksheets[0]
+# ── Database Models ────────────────────────────────────────────────────────────
 
-def _rows_as_dicts(ws):
-    headers = [c.value for c in ws[1]]
-    result = []
-    for row in ws.iter_rows(min_row=2, values_only=True):
-        if all(v is None for v in row): continue
-        result.append(dict(zip(headers, row)))
-    return result
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    mobile = db.Column(db.String(20), default='')
+    qualification = db.Column(db.String(100), default='')
+    age = db.Column(db.Integer, default=25)
+    income = db.Column(db.Float, default=50000.0)
+    savings = db.Column(db.Float, default=0.0)
+    expenses = db.Column(db.Float, default=0.0)
+    investments = db.Column(db.Float, default=0.0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_admin = db.Column(db.Boolean, default=False)
 
-def _next_id(ws):
-    max_id = 0
-    for row in ws.iter_rows(min_row=2, values_only=True):
-        if row[0] and isinstance(row[0], int): max_id = max(max_id, row[0])
-    return max_id + 1
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'username': self.username,
+            'password': self.password,
+            'mobile': self.mobile,
+            'qualification': self.qualification,
+            'age': self.age,
+            'income': self.income,
+            'savings': self.savings,
+            'expenses': self.expenses,
+            'investments': self.investments,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else '',
+            'is_admin': int(self.is_admin)
+        }
 
-def _delete_row_by_id(filepath, rid):
-    wb, ws = _load_ws(filepath)
-    header = [list(ws[1])]
-    keep = header + [list(r) for r in ws.iter_rows(min_row=2) if r[0].value != rid]
-    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-        for cell in row: cell.value = None
-    for r_idx, row in enumerate(keep[1:], start=2):
-        for c_idx, cell in enumerate(row, start=1):
-            ws.cell(row=r_idx, column=c_idx, value=cell.value)
-    wb.save(filepath)
+class History(db.Model):
+    __tablename__ = 'history'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    income = db.Column(db.Float, nullable=False)
+    risk = db.Column(db.String(50), nullable=False)
+    goal = db.Column(db.String(50), nullable=False)
+    result = db.Column(db.Text, nullable=False)  # JSON Stringified
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-# ── User helpers ───────────────────────────────────────────────────────────────
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'age': self.age,
+            'income': self.income,
+            'risk': self.risk,
+            'goal': self.goal,
+            'result': json.loads(self.result) if isinstance(self.result, str) else self.result,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else ''
+        }
+
+class Contact(db.Model):
+    __tablename__ = 'contacts'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    mobile = db.Column(db.String(20), default='')
+    subject = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'mobile': self.mobile,
+            'subject': self.subject,
+            'message': self.message,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else ''
+        }
+
+# Automatic DB Initialization and Default Admin Creation
+with app.app_context():
+    db.create_all()
+    # Create Default Admin if absent
+    if not User.query.filter_by(username='admin').first():
+        admin = User(
+            name='Admin',
+            email='admin@advisor.com',
+            username='admin',
+            password=generate_password_hash('admin123'),
+            age=25,
+            income=0.0,
+            is_admin=True
+        )
+        db.session.add(admin)
+        db.session.commit()
+
+# ── User Helpers ───────────────────────────────────────────────────────────────
 
 def get_all_users():
-    _, ws = _load_ws(USERS_FILE); return _rows_as_dicts(ws)
+    return [u.to_dict() for u in User.query.all()]
 
 def get_user_by_id(uid):
-    return next((u for u in get_all_users() if u['id'] == uid), None)
+    user = User.query.get(uid)
+    return user.to_dict() if user else None
 
 def get_user_by_identifier(identifier):
-    return next((u for u in get_all_users() if u['email'] == identifier or u['username'] == identifier), None)
+    user = User.query.filter((User.email == identifier) | (User.username == identifier)).first()
+    return user.to_dict() if user else None
 
-def create_user(name, email, username, password, mobile='', qualification='', age=25, income=50000):
-    wb, ws = _load_ws(USERS_FILE)
-    ws.append([_next_id(ws), name, email, username, password, mobile, qualification,
-               int(age), float(income), 0, 0, 0, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 0])
-    wb.save(USERS_FILE)
+def create_user(name, email, username, password_hash, mobile='', qualification='', age=25, income=50000):
+    new_user = User(
+        name=name,
+        email=email,
+        username=username,
+        password=password_hash,
+        mobile=mobile,
+        qualification=qualification,
+        age=int(age),
+        income=float(income)
+    )
+    db.session.add(new_user)
+    db.session.commit()
 
 def update_user(uid, **kwargs):
-    wb, ws = _load_ws(USERS_FILE)
-    headers = [c.value for c in ws[1]]
-    for row in ws.iter_rows(min_row=2):
-        if row[0].value == uid:
-            for k, v in kwargs.items():
-                if k in headers: row[headers.index(k)].value = v
-            break
-    wb.save(USERS_FILE)
+    user = User.query.get(uid)
+    if user:
+        for k, v in kwargs.items():
+            if hasattr(user, k):
+                setattr(user, k, v)
+        db.session.commit()
 
-# ── History helpers ────────────────────────────────────────────────────────────
+# ── History Helpers ────────────────────────────────────────────────────────────
 
 def add_history(user_id, age, income, risk, goal, result):
-    wb, ws = _load_ws(HISTORY_FILE)
-    ws.append([_next_id(ws), user_id, int(age), float(income), risk, goal,
-               json.dumps(result), datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
-    wb.save(HISTORY_FILE)
+    history_entry = History(
+        user_id=user_id,
+        age=int(age),
+        income=float(income),
+        risk=risk,
+        goal=goal,
+        result=json.dumps(result)
+    )
+    db.session.add(history_entry)
+    db.session.commit()
 
 def get_user_history(user_id, limit=5):
-    _, ws = _load_ws(HISTORY_FILE)
-    rows = [r for r in _rows_as_dicts(ws) if r['user_id'] == user_id]
-    return list(reversed(rows))[:limit]
+    history_entries = History.query.filter_by(user_id=user_id).order_by(History.id.desc()).limit(limit).all()
+    return [h.to_dict() for h in history_entries]
 
 def get_all_history():
-    _, ws = _load_ws(HISTORY_FILE); return _rows_as_dicts(ws)
+    return [h.to_dict() for h in History.query.all()]
 
-# ── Contact helpers ────────────────────────────────────────────────────────────
+# ── Contact Helpers ────────────────────────────────────────────────────────────
 
 def add_contact(name, email, mobile, subject, message):
-    wb, ws = _load_ws(CONTACT_FILE)
-    ws.append([_next_id(ws), name, email, mobile, subject, message,
-               datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
-    wb.save(CONTACT_FILE)
+    new_contact = Contact(
+        name=name,
+        email=email,
+        mobile=mobile,
+        subject=subject,
+        message=message
+    )
+    db.session.add(new_contact)
+    db.session.commit()
 
 def get_all_contacts():
-    _, ws = _load_ws(CONTACT_FILE); return list(reversed(_rows_as_dicts(ws)))
+    contacts = Contact.query.order_by(Contact.id.desc()).all()
+    return [c.to_dict() for c in contacts]
 
-def delete_contact(cid): _delete_row_by_id(CONTACT_FILE, cid)
+def delete_contact(cid):
+    contact = Contact.query.get(cid)
+    if contact:
+        db.session.delete(contact)
+        db.session.commit()
+
+def _delete_row_by_id(model_type, rid):
+    if model_type == 'users':
+        obj = User.query.get(rid)
+    elif model_type == 'contacts':
+        obj = Contact.query.get(rid)
+    else:
+        obj = None
+    
+    if obj:
+        db.session.delete(obj)
+        db.session.commit()
 
 # ── Live Market Data Helper ────────────────────────────────────────────────────
 
 def get_live_market_data():
     try:
-        # Fetching Yahoo Finance trackers for Nifty 50, Sensex, and Gold futures
         tickers = yf.Tickers('^NSEI ^BSESN GC=F')
         nifty = tickers.tickers['^NSEI'].fast_info
         sensex = tickers.tickers['^BSESN'].fast_info
         gold = tickers.tickers['GC=F'].fast_info
         
-        # Real-time data calculations
         n_price = nifty.last_price
         n_change = ((n_price - nifty.previous_close) / nifty.previous_close) * 100
         
         s_price = sensex.last_price
         s_change = ((s_price - sensex.previous_close) / sensex.previous_close) * 100
         
-        # Approximate global Gold USD conversion to safe local MCX metric equivalents for 10g 
         raw_gold_oz = gold.last_price
         estimated_gold_10g = (raw_gold_oz * 83.50) / 2.83495
         
@@ -151,14 +239,13 @@ def get_live_market_data():
         }
     except Exception as e:
         print(f"Error fetching live market data: {e}")
-        # Academic standard fallbacks to load smoothly if system is offline
         return {
             'nifty': 24064.55, 'nifty_change': 0.31,
             'sensex': 77058.35, 'sensex_change': 0.33,
             'gold': 72450.00
         }
 
-# ── Auth decorators ────────────────────────────────────────────────────────────
+# ── Auth Decorators ────────────────────────────────────────────────────────────
 
 def login_required(f):
     @wraps(f)
@@ -174,7 +261,7 @@ def admin_required(f):
         return f(*a, **kw)
     return d
 
-# ── Investment engine ──────────────────────────────────────────────────────────
+# ── Investment Engine ──────────────────────────────────────────────────────────
 
 def predict_investment(age, income, risk, goal):
     risk = risk.lower(); goal = goal.lower()
@@ -232,9 +319,9 @@ def register():
         email = request.form['email']
         username = request.form['username']
         
-        if any(u['email']==email for u in get_all_users()):
+        if User.query.filter_by(email=email).first():
             flash('Email already registered.', 'error')
-        elif any(u['username']==username for u in get_all_users()):
+        elif User.query.filter_by(username=username).first():
             flash('Username already taken.', 'error')
         else:
             create_user(
@@ -255,7 +342,6 @@ def register():
 def logout():
     session.clear(); return redirect(url_for('login'))
 
-# UPDATED ROUTE: Handing structured live metrics safely downstream
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -340,7 +426,7 @@ def admin_panel():
 @login_required
 @admin_required
 def admin_delete_user(uid):
-    _delete_row_by_id(USERS_FILE, uid)
+    _delete_row_by_id('users', uid)
     flash('User deleted successfully.', 'success')
     return redirect(url_for('admin_panel'))
 
@@ -351,9 +437,6 @@ def admin_delete_contact(cid):
     delete_contact(cid)
     flash('Contact message deleted.', 'success')
     return redirect(url_for('admin_panel'))
-
-# Initialize Excel files on app startup
-init_excel()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
