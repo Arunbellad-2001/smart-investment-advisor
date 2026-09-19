@@ -7,73 +7,167 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  :root{--bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#00d4aa;--accent2:#7b61ff;--text:#e8eaf0;--muted:#7a8299;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
-    background-image:radial-gradient(ellipse 70% 50% at 15% 20%,rgba(0,212,170,0.06) 0%,transparent 55%),radial-gradient(ellipse 50% 70% at 85% 80%,rgba(123,97,255,0.06) 0%,transparent 55%);
+  :root{
+    --bg:#050a14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);
+    --accent:#00d4aa;--accent2:#7b61ff;--accent3:#fbbf24;--danger:#ff4d6d;
+    --text:#e8eaf0;--muted:#7a8299;
   }
-  .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,10,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+  body{
+    font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 15% 20%,rgba(0,212,170,0.06) 0%,transparent 55%),
+      radial-gradient(ellipse 50% 70% at 85% 80%,rgba(123,97,255,0.06) 0%,transparent 55%);
+  }
+
+  /* ── Navbar ── */
+  .navbar{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(5,10,20,0.88);backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;
+  }
   .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-  .nav-logo-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+  .nav-logo-icon{
+    width:36px;height:36px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:17px;box-shadow:0 4px 14px rgba(0,212,170,0.3);
+  }
+  .nav-logo-text{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--text);}
   .nav-logo-text span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-  .nav-links{display:flex;align-items:center;gap:4px;}
-  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;transition:all 0.2s;}
-  .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,0.06);}
-  .nav-links a.logout{color:#ff4d6d;}
-  .nav-links a.logout:hover{background:rgba(255,77,109,0.1);}
-  .main{padding:80px 32px 40px;max-width:1200px;margin:0 auto;}
-  .welcome{margin-bottom:32px;}
-  .welcome h2{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+  .nav-links{display:flex;align-items:center;gap:3px;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:10px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,0.07);}
+  .nav-links a.nav-logout{color:var(--danger);}
+  .nav-links a.nav-logout:hover{background:rgba(255,77,109,0.1);}
+
+  /* ── Layout ── */
+  .main{padding:82px 32px 50px;max-width:1200px;margin:0 auto;}
+
+  /* ── Welcome ── */
+  .welcome{margin-bottom:26px;}
+  .welcome h2{font-family:'Syne',sans-serif;font-size:27px;font-weight:800;}
   .welcome h2 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-  .welcome p{color:var(--muted);font-size:14px;margin-top:6px;}
-  
-  /* Market Stats Tickers Row Styles */
-  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
-  .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;backdrop-filter:blur(20px);display:flex;flex-direction:column;justify-content:space-between;}
-  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:8px;}
-  .stat-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;}
-  
-  /* Real-time Ticker indicators */
-  .change-badge{font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;width:fit-content;}
-  .change-badge.green{background:rgba(0,212,170,0.1);color:var(--accent);}
-  .change-badge.red{background:rgba(255,77,109,0.1);color:#ff4d6d;}
+  .welcome p{color:var(--muted);font-size:13px;margin-top:5px;}
+
+  /* ── Market Ticker Bar ── */
+  .market-bar{
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border);
+    border-radius:14px;padding:0 20px;
+    display:flex;align-items:center;gap:0;
+    margin-bottom:22px;overflow:hidden;
+    height:52px;
+  }
+  .market-bar-title{
+    font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+    color:var(--muted);text-transform:uppercase;letter-spacing:1px;
+    padding-right:20px;border-right:1px solid var(--border);
+    white-space:nowrap;flex-shrink:0;
+  }
+  .ticker-scroll{display:flex;gap:0;flex:1;overflow:hidden;}
+  .ticker-item{
+    display:flex;align-items:center;gap:12px;
+    padding:0 24px;border-right:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .ticker-item:last-child{border-right:none;}
+  .ticker-name{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;}
+  .ticker-price{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;white-space:nowrap;}
+  .ticker-change{font-size:11px;font-weight:600;white-space:nowrap;}
+  .up{color:var(--accent);}
+  .dn{color:var(--danger);}
+  .live-dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--accent);margin-right:6px;
+    animation:pulse 1.6s ease-in-out infinite;
+    flex-shrink:0;
+  }
+  .live-dot.offline{background:var(--muted);animation:none;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
+
+  /* ── Stats ── */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+  .stat-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:16px;padding:20px;
+  }
+  .stat-icon{font-size:20px;margin-bottom:10px;}
+  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:6px;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
   .stat-val.green{color:var(--accent);}
   .stat-val.purple{color:var(--accent2);}
-  .stat-val.yellow{color:#fbbf24;}
-  .muted-text{font-size:12px;color:var(--muted);}
+  .stat-val.yellow{color:var(--accent3);}
+  .stat-change{font-size:11px;margin-top:4px;font-weight:600;}
 
-  .grid2{display:grid;grid-template-columns:1fr 340px;gap:24px;}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
-  .card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
-  .card-sub{color:var(--muted);font-size:13px;margin-bottom:24px;}
+  /* ── Two column grid ── */
+  .grid-main{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;}
+
+  /* ── Cards ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:20px;padding:26px;backdrop-filter:blur(20px);
+    box-shadow:0 12px 40px rgba(0,0,0,0.3);
+  }
+  .card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;}
+  .card-sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
+
+  /* ── Form ── */
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .form-group{margin-bottom:18px;}
-  label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px;}
-  input,select{width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all 0.2s;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px;}
+  input,select{
+    width:100%;padding:12px 15px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;color:var(--text);
+    font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all 0.2s;
+  }
   input:focus,select:focus{border-color:var(--accent);background:rgba(0,212,170,0.05);box-shadow:0 0 0 3px rgba(0,212,170,0.1);}
+  input::placeholder{color:var(--muted);}
   select option{background:#0d1526;}
-  .btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.5px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
-  .btn:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,170,0.3);}
+
+  /* ── Button ── */
+  .btn{
+    width:100%;padding:13px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    border:none;border-radius:12px;color:#fff;
+    font-family:'Syne',sans-serif;font-size:14px;font-weight:800;
+    letter-spacing:0.4px;cursor:pointer;transition:all 0.22s;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .btn:hover{opacity:0.88;transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,212,170,0.3);}
+
+  /* ── Tips ── */
   .tips-list{list-style:none;}
-  .tip{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);}
-  .tip:last-child{border-bottom:none;}
+  .tip-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);}
+  .tip-item:last-child{border-bottom:none;}
   .tip-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-  .tip-icon.g{background:rgba(0,212,170,0.12);}
-  .tip-icon.p{background:rgba(123,97,255,0.12);}
-  .tip-icon.y{background:rgba(251,191,36,0.12);}
-  .tip-icon.r{background:rgba(255,77,109,0.12);}
+  .t1{background:rgba(0,212,170,0.1);}
+  .t2{background:rgba(123,97,255,0.1);}
+  .t3{background:rgba(251,191,36,0.1);}
+  .t4{background:rgba(255,77,109,0.1);}
   .tip-text h4{font-size:13px;font-weight:600;margin-bottom:2px;}
-  .tip-text p{font-size:12px;color:var(--muted);}
-  .history{margin-top:24px;}
-  .history-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
-  .history-item .risk{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;}
-  .risk.low{background:rgba(0,212,170,0.1);color:var(--accent);}
-  .risk.medium{background:rgba(251,191,36,0.1);color:#fbbf24;}
-  .risk.high{background:rgba(255,77,109,0.1);color:#ff4d6d;}
-  @media(max-width:900px){.grid2{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}}
+  .tip-text p{font-size:12px;color:var(--muted);line-height:1.5;}
+
+  /* ── History ── */
+  .hist-header{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin:22px 0 10px;padding-top:20px;border-top:1px solid var(--border);}
+  .history-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;font-size:13px;}
+  .risk-badge{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700;}
+  .risk-low{background:rgba(0,212,170,0.1);color:var(--accent);}
+  .risk-medium{background:rgba(251,191,36,0.1);color:var(--accent3);}
+  .risk-high{background:rgba(255,77,109,0.1);color:var(--danger);}
+
+  /* ── Section divider ── */
+  .section-divider{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:22px 0 14px;padding-top:20px;border-top:1px solid var(--border);}
+
+  @media(max-width:960px){.grid-main{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr 1fr;}}
+  @media(max-width:600px){.form-row{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr 1fr;}.navbar{padding:0 16px;}.main{padding:74px 16px 40px;}.nav-links a{padding:6px 8px;font-size:12px;}}
 </style>
 </head>
 <body>
+
+<!-- ── NAVBAR ───────────────────────────────────────────────── -->
 <nav class="navbar">
   <a href="/dashboard" class="nav-logo">
     <div class="nav-logo-icon">💹</div>
@@ -84,53 +178,137 @@
     <a href="/about">About</a>
     <a href="/details">My Details</a>
     <a href="/profile">Profile</a>
+    <a href="/contact">Contact</a>
     {% if session.get('is_admin') %}<a href="/admin">⚙ Admin</a>{% endif %}
-    <a href="/contact" {% if request.path=="/contact" %}class="active"{% endif %}>Contact</a>
-    <a href="/logout" class="logout">Logout</a>
+    <a href="/logout" class="nav-logout">Logout</a>
   </div>
 </nav>
 
+<!-- ── MAIN ─────────────────────────────────────────────────── -->
 <main class="main">
+
+  <!-- Welcome -->
   <div class="welcome">
     <h2>Welcome back, <span>{{ session.name }} 👋</span></h2>
-    <p>Here's your personalized investment overview for today</p>
+    <p>Here's your personalized investment overview — {{ 'Live market data' if market.live else 'Market data unavailable (offline / market closed)' }}</p>
   </div>
 
+  <!-- ── LIVE MARKET TICKER BAR ─────────────────────────────── -->
+  <div class="market-bar">
+    <div class="market-bar-title">
+      <div class="live-dot {{ '' if market.live else 'offline' }}" style="display:inline-block;"></div>
+      LIVE
+    </div>
+    <div class="ticker-scroll">
+
+      <!-- Nifty 50 -->
+      <div class="ticker-item">
+        <span class="ticker-name">Nifty 50</span>
+        <span class="ticker-price" id="nifty-price">
+          {% if market.nifty.price == '—' %}—{% else %}{{ "{:,.2f}".format(market.nifty.price) }}{% endif %}
+        </span>
+        <span class="ticker-change {{ 'up' if market.nifty.up else 'dn' }}" id="nifty-chg">
+          {% if market.nifty.price != '—' %}
+            {{ '+' if market.nifty.up else '' }}{{ market.nifty.pct }}%
+          {% endif %}
+        </span>
+      </div>
+
+      <!-- Sensex -->
+      <div class="ticker-item">
+        <span class="ticker-name">Sensex</span>
+        <span class="ticker-price" id="sensex-price">
+          {% if market.sensex.price == '—' %}—{% else %}{{ "{:,.2f}".format(market.sensex.price) }}{% endif %}
+        </span>
+        <span class="ticker-change {{ 'up' if market.sensex.up else 'dn' }}" id="sensex-chg">
+          {% if market.sensex.price != '—' %}
+            {{ '+' if market.sensex.up else '' }}{{ market.sensex.pct }}%
+          {% endif %}
+        </span>
+      </div>
+
+      <!-- Gold -->
+      <div class="ticker-item">
+        <span class="ticker-name">Gold ($/oz)</span>
+        <span class="ticker-price" id="gold-price">
+          {% if market.gold.price == '—' %}—{% else %}${{ "{:,.2f}".format(market.gold.price) }}{% endif %}
+        </span>
+        <span class="ticker-change {{ 'up' if market.gold.up else 'dn' }}" id="gold-chg">
+          {% if market.gold.price != '—' %}
+            {{ '+' if market.gold.up else '' }}{{ market.gold.pct }}%
+          {% endif %}
+        </span>
+      </div>
+
+      <!-- USD/INR -->
+      <div class="ticker-item">
+        <span class="ticker-name">USD/INR</span>
+        <span class="ticker-price" id="usdinr-price">
+          {% if market.usdinr.price == '—' %}—{% else %}₹{{ "{:.2f}".format(market.usdinr.price) }}{% endif %}
+        </span>
+        <span class="ticker-change {{ 'up' if market.usdinr.up else 'dn' }}" id="usdinr-chg">
+          {% if market.usdinr.price != '—' %}
+            {{ '+' if market.usdinr.up else '' }}{{ market.usdinr.pct }}%
+          {% endif %}
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── STAT CARDS (also live) ─────────────────────────────── -->
   <div class="stats-row">
-    <div class="stat">
-      <div class="stat-label">Market Status</div>
-      <div class="stat-val green">● Live</div>
-      <span class="muted-text">Real-time Feed</span>
-    </div>
-    
-    <div class="stat">
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
       <div class="stat-label">Nifty 50</div>
-      <div class="stat-val">₹{{ "{:,.2f}".format(market.nifty) }}</div>
-      <span class="change-badge {% if market.nifty_change >= 0 %}green{% else %}red{% endif %}">
-        {% if market.nifty_change >= 0 %}+{% endif %}{{ market.nifty_change }}%
-      </span>
+      <div class="stat-val green" id="stat-nifty">
+        {% if market.nifty.price == '—' %}—{% else %}{{ "{:,.0f}".format(market.nifty.price) }}{% endif %}
+      </div>
+      <div class="stat-change {{ 'up' if market.nifty.up else 'dn' }}" id="stat-nifty-chg">
+        {% if market.nifty.price != '—' %}{{ '+' if market.nifty.up else '' }}{{ market.nifty.pct }}%{% else %}No data{% endif %}
+      </div>
     </div>
-    
-    <div class="stat">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
       <div class="stat-label">Sensex</div>
-      <div class="stat-val yellow">₹{{ "{:,.2f}".format(market.sensex) }}</div>
-      <span class="change-badge {% if market.sensex_change >= 0 %}green{% else %}red{% endif %}">
-        {% if market.sensex_change >= 0 %}+{% endif %}{{ market.sensex_change }}%
-      </span>
+      <div class="stat-val yellow" id="stat-sensex">
+        {% if market.sensex.price == '—' %}—{% else %}{{ "{:,.0f}".format(market.sensex.price) }}{% endif %}
+      </div>
+      <div class="stat-change {{ 'up' if market.sensex.up else 'dn' }}" id="stat-sensex-chg">
+        {% if market.sensex.price != '—' %}{{ '+' if market.sensex.up else '' }}{{ market.sensex.pct }}%{% else %}No data{% endif %}
+      </div>
     </div>
-    
-    <div class="stat">
-      <div class="stat-label">Gold (Per 10g)</div>
-      <div class="stat-val purple">₹{{ "{:,.2f}".format(market.gold) }}</div>
-      <span class="muted-text">MCX Live Tracked</span>
+    <div class="stat-card">
+      <div class="stat-icon">🥇</div>
+      <div class="stat-label">Gold ($/oz)</div>
+      <div class="stat-val purple" id="stat-gold">
+        {% if market.gold.price == '—' %}—{% else %}${{ "{:,.0f}".format(market.gold.price) }}{% endif %}
+      </div>
+      <div class="stat-change {{ 'up' if market.gold.up else 'dn' }}" id="stat-gold-chg">
+        {% if market.gold.price != '—' %}{{ '+' if market.gold.up else '' }}{{ market.gold.pct }}%{% else %}No data{% endif %}
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💱</div>
+      <div class="stat-label">USD / INR</div>
+      <div class="stat-val" id="stat-usdinr">
+        {% if market.usdinr.price == '—' %}—{% else %}₹{{ "{:.2f}".format(market.usdinr.price) }}{% endif %}
+      </div>
+      <div class="stat-change {{ 'up' if market.usdinr.up else 'dn' }}" id="stat-usdinr-chg">
+        {% if market.usdinr.price != '—' %}{{ '+' if market.usdinr.up else '' }}{{ market.usdinr.pct }}%{% else %}No data{% endif %}
+      </div>
     </div>
   </div>
 
-  <div class="grid2">
+  <!-- ── MAIN TWO-COLUMN GRID ───────────────────────────────── -->
+  <div class="grid-main">
+
+    <!-- LEFT: Advisor Form -->
     <div>
       <div class="card">
         <div class="card-title">🧠 Investment Advisor</div>
-        <div class="card-sub">Fill in your details to get personalized advice</div>
+        <div class="card-sub">Fill in your details to get a personalized portfolio recommendation</div>
+
         <form method="POST" action="/predict">
           <div class="form-row">
             <div class="form-group">
@@ -147,7 +325,7 @@
               <label>Risk Tolerance</label>
               <select name="risk" required>
                 <option value="">Select level</option>
-                <option value="low">🟢 Low — Safe & Stable</option>
+                <option value="low">🟢 Low — Safe &amp; Stable</option>
                 <option value="medium">🟡 Medium — Balanced</option>
                 <option value="high">🔴 High — Aggressive</option>
               </select>
@@ -170,64 +348,111 @@
           </button>
         </form>
 
+        <!-- History -->
         {% if history %}
-        <div class="history">
-          <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;font-weight:600;">Recent History</div>
-          {% for h in history %}
-          <div class="history-item">
-            <span style="font-size:13px;font-weight:500;">Age {{ h.age }} · ₹{{ "{:,.0f}".format(h.income) }}/mo · {{ h.goal|title }}</span>
-            <span class="risk {{ h.risk }}">{{ h.risk|upper }}</span>
-          </div>
-          {% endfor %}
+        <div class="hist-header">Recent History</div>
+        {% for h in history %}
+        <div class="history-item">
+          <span style="font-weight:500;">
+            Age {{ h.age }} &middot; ₹{{ "{:,.0f}".format(h.income|float) }}/mo &middot; {{ h.goal|title }}
+          </span>
+          <span class="risk-badge risk-{{ h.risk }}">{{ h.risk|upper }}</span>
         </div>
+        {% endfor %}
         {% endif %}
+
       </div>
     </div>
 
+    <!-- RIGHT: Tips -->
     <div>
       <div class="card">
         <div class="card-title">💡 Smart Investor Tips</div>
-        <div class="card-sub">Timeless principles for wealth building</div>
+        <div class="card-sub">Timeless principles for building wealth</div>
         <ul class="tips-list">
-          <li class="tip">
-            <div class="tip-icon g">🌱</div>
+          <li class="tip-item">
+            <div class="tip-icon t1">🌱</div>
             <div class="tip-text">
               <h4>Start Early</h4>
-              <p>Compounding grows wealth exponentially over time. Every year counts.</p>
+              <p>Compounding works best over long horizons. Every year you delay costs you more than you think.</p>
             </div>
           </li>
-          <li class="tip">
-            <div class="tip-icon p">🎯</div>
+          <li class="tip-item">
+            <div class="tip-icon t2">🎯</div>
             <div class="tip-text">
               <h4>Diversify Portfolio</h4>
-              <p>Spread risk across stocks, bonds, real estate, and gold.</p>
+              <p>Spread risk across stocks, bonds, real estate, and gold. Never put all eggs in one basket.</p>
             </div>
           </li>
-          <li class="tip">
-            <div class="tip-icon y">📅</div>
+          <li class="tip-item">
+            <div class="tip-icon t3">📅</div>
             <div class="tip-text">
               <h4>Use SIP Strategy</h4>
-              <p>Systematic Investment Plans reduce market timing risk via averaging.</p>
+              <p>Systematic Investment Plans average out market volatility and build discipline automatically.</p>
             </div>
           </li>
-          <li class="tip">
-            <div class="tip-icon r">🔄</div>
+          <li class="tip-item">
+            <div class="tip-icon t4">🔄</div>
             <div class="tip-text">
               <h4>Review Regularly</h4>
-              <p>Rebalance your portfolio every 6–12 months to stay on track.</p>
+              <p>Rebalance your portfolio every 6–12 months to keep your asset allocation on target.</p>
             </div>
           </li>
-          <li class="tip">
-            <div class="tip-icon g">🛡️</div>
+          <li class="tip-item">
+            <div class="tip-icon t1">🛡️</div>
             <div class="tip-text">
               <h4>Emergency Fund First</h4>
-              <p>Keep 6 months of expenses liquid before investing.</p>
+              <p>Keep 6 months of expenses in liquid savings before putting money into investments.</p>
             </div>
           </li>
         </ul>
       </div>
     </div>
-  </div>
+
+  </div><!-- end grid-main -->
 </main>
+
+<!-- ── AUTO-REFRESH MARKET DATA EVERY 60 SECONDS ─────────── -->
+<script>
+async function refreshMarket() {
+  try {
+    const res  = await fetch('/api/market');
+    const data = await res.json();
+    if (!data.live) return;
+
+    const fmt = (v, prefix='') => v === '—' ? '—' : prefix + Number(v).toLocaleString('en-IN', {maximumFractionDigits:2});
+
+    // Ticker bar
+    document.getElementById('nifty-price').textContent  = fmt(data.nifty.price);
+    document.getElementById('sensex-price').textContent = fmt(data.sensex.price);
+    document.getElementById('gold-price').textContent   = fmt(data.gold.price, '$');
+    document.getElementById('usdinr-price').textContent = fmt(data.usdinr.price, '₹');
+
+    // Stat cards
+    document.getElementById('stat-nifty').textContent  = fmt(data.nifty.price);
+    document.getElementById('stat-sensex').textContent = fmt(data.sensex.price);
+    document.getElementById('stat-gold').textContent   = fmt(data.gold.price, '$');
+    document.getElementById('stat-usdinr').textContent = fmt(data.usdinr.price, '₹');
+
+    const setChg = (id, d) => {
+      const el = document.getElementById(id);
+      if (!el || d.price === '—') return;
+      el.textContent = (d.up ? '+' : '') + d.pct + '%';
+      el.className = 'stat-change ' + (d.up ? 'up' : 'dn');
+    };
+    setChg('stat-nifty-chg',  data.nifty);
+    setChg('stat-sensex-chg', data.sensex);
+    setChg('stat-gold-chg',   data.gold);
+    setChg('stat-usdinr-chg', data.usdinr);
+
+  } catch(e) {
+    console.log('Market refresh failed:', e);
+  }
+}
+
+// Refresh every 60 seconds
+setInterval(refreshMarket, 60000);
+</script>
+
 </body>
 </html>
