@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from supabase import create_client, Client
 import os, json
@@ -12,7 +13,7 @@ try:
 except ImportError:
     YFINANCE_AVAILABLE = False
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.secret_key = 'smart_advisor_secret_key_2024'
 
 # ─── SUPABASE CONFIG ───────────────────────────────────────────────────────────
