@@ -6,4 +6,3 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import the existing Flask app from app.py at root
 from app import app
-
