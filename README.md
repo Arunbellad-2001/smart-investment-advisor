@@ -8,7 +8,8 @@ Full-stack Flask web application with Excel (no SQL) backend.
 pip install -r requirements.txt
 python app.py
 ```
-Open: http://localhost:5000
+Open: http://localhost:500
+Live: smart-investment-advisor-eight.vercel.app
 
 ## 🔑 Default Credentials
 | Role  | Username | Password  |
